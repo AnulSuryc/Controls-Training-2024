@@ -36,7 +36,7 @@ public class GeneralRoller extends SubsystemBase {
 
 
   // Misc variables for specific subsystem go at the top of the class, right here
-
+      
   // Enum representing all of the states the subsystem can be in
   public enum GeneralRollerStates {
     StateOff,
@@ -45,6 +45,9 @@ public class GeneralRoller extends SubsystemBase {
     StateForwardFast,
   }
   
+  GeneralRollerStates currentState = GeneralRollerStates.StateOff;
+  
+
   public LinearFilter filter = LinearFilter.singlePoleIIR(0.5, 0.2);
 
   // You generally only need one motor for the rollers on Vivaldi
@@ -54,25 +57,48 @@ public class GeneralRoller extends SubsystemBase {
   private double desiredVoltage = 0;
 
   public GeneralRoller(int port, boolean setInverted) {
+    port = kIntakePort;
+    setInverted = kIntakeInverted;
+
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
 
 
     // You have been given the CANSparkMax here, which is representative of the motor driving this shaft, 
-    // you still need to confige it! Look at the docs and the provided arguments to this subsystem, and determine what those configs should be.
-
-
+    // you still need to configure it! Look at the docs and the provided arguments to this subsystem, and determine what those configs should be
   }
 
   @Override
   public void periodic() {
     //This function runs ~20 times per second. It is in every subsytem, and is effectively your "while" loop or "update" loop.
     //Thus, the usage of while(true) and similar loops is generally avoided--- they can cause memory-leaks and other jank! Instead, put looping code here. 
+    if(m_spark.getCurrentStateState() == StateOff)
+    {
+      desiredVoltage = 0;
+
+    }
+
+    if(m_spark.getCurrentStateState() == StateForward)
+    {
+      
+      desiredVoltage = 5;
+    }
+    if(m_spark.getCurrentStateState()== StateForwardFast)
+    {
+      
+      desiredVoltage = 8;
+    }
+    if(m_spark.getCurrentStateState()== StateReverse)
+    {
+      
+      desiredVoltage = -5;
+    }
   }
 
   public double getCurrent() {
     //hint: this method wants you to return the Amperage (Current, or A) to the motor. the LinearFilter is useful here.
 
-    return 1.0; //replace 1.0 with your return value
+    double current = filter.calculate(0.5, 0.2);
+    return current; //replace 1.0 with your return value
   }
 
 
@@ -80,12 +106,13 @@ public class GeneralRoller extends SubsystemBase {
   
   public void requestState(GeneralRollerStates desiredState) {
     // hint: this method is called with a GeneralRollerState when the state is to be changed.
-    
+    currentState = desiredState;  
   }
  
   
   public GeneralRollerStates getCurrentState() { 
-    return GeneralRollerStates.StateForward; //You should change this!
+
+    return currentState; //You should change this!
     
   }
 
