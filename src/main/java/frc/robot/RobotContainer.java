@@ -39,6 +39,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import static frc.robot.Constants.GeneralRollerConstants.*;
+import frc.robot.commands.NoteHandlingCommandBuilder;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -87,7 +88,15 @@ public class RobotContainer {
       NoteHandlingCommandBuilder.generalRollerRunForward(roller)
 
     );
-   
+    
+    m_driver.leftTrigger().onTrue(
+
+      NoteHandlingCommandBuilder.generalRollerRunBackward(roller)
+    );
+
+    m_driver.rightBumper().onTrue(
+      NoteHandlingCommandBuilder.generalRollerStopRunning(roller)
+    );
   }
 
   /**

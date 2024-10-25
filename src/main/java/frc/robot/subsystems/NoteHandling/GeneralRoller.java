@@ -44,7 +44,7 @@ public class GeneralRoller extends SubsystemBase {
     StateReverse,
     StateForwardFast,
   }
-  
+   
   GeneralRollerStates currentState = GeneralRollerStates.StateOff;
   
 
@@ -56,15 +56,18 @@ public class GeneralRoller extends SubsystemBase {
   // Hint: motors need a voltage! You'll still need to set the motor's voltage yourself, though.
   private double desiredVoltage = 0;
 
-  public GeneralRoller(int port, boolean setInverted) {
-    port = kIntakePort;
-    setInverted = kIntakeInverted;
+   public GeneralRoller(int port, boolean setInverted) {
 
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
 
 
     // You have been given the CANSparkMax here, which is representative of the motor driving this shaft, 
     // you still need to configure it! Look at the docs and the provided arguments to this subsystem, and determine what those configs should be
+
+    m_spark.setSmartCurrentLimit(kIntakeCurrentLimit);
+    m_spark.setInverted(kIntakeInverted);
+    m_spark.enableVoltageCompensation(kNominalVoltage);
+    m_spark.setIdleMode(IdleMode.kBrake);
   }
 
   @Override
